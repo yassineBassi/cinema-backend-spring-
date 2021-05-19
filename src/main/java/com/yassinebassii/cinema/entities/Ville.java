@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString
-public class Ville implements Serializable {
+public class Ville extends com.yassinebassii.cinema.entities.Data implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 15)

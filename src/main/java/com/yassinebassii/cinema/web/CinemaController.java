@@ -49,19 +49,6 @@ public class CinemaController {
         });
     }
 
-    @GetMapping(path = "/dashboard")
-    public String home(HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
-        AtomicBoolean isAdmin = new AtomicBoolean(false);
-        authentication.getAuthorities().forEach(grantedAuthority -> {
-            if(grantedAuthority.getAuthority().equals("ROLE_ADMIN")){
-                isAdmin.set(true);
-            }
-        });
-        if(isAdmin.get()) return "home";
-        httpServletResponse.sendRedirect("/login?error");
-        return "";
-    }
-
 }
 
 @Data

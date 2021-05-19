@@ -2,7 +2,6 @@
 <html
         xmlns:th="http://www.thymeleaf.org"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/Layout"
-        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
         layout:decorator="layout"
         lang="en"
 >
@@ -10,8 +9,11 @@
   <title>Log in</title>
   <link type="text/css" rel="stylesheet" th:href="@{css/login.css}" />
 </head>
+
 <body class="overflow-hidden">
-  <div layout:fragment="content" class="w-100 h-100">
+<h1>Login</h1>
+
+  <section layout:fragment="content" class="w-100 h-100">
     <img class="background-image h-100" th:src="@{images/movies.jpg}">
     <div class="row align-items-center h-100 w-100">
       <div class="card col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-sm-1 offset-md-2 offset-lg-3 offset-xl-4 bg-dark">
@@ -51,6 +53,6 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </body>
 </html>
