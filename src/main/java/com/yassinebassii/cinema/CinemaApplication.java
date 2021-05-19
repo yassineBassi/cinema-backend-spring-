@@ -23,6 +23,7 @@ public class CinemaApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         repositoryRestConfiguration.exposeIdsFor(Film.class);
+        cinemaInitService.initRoles();
         cinemaInitService.initUsers();
         cinemaInitService.initVilles();
         cinemaInitService.initCinemas();

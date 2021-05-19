@@ -14,30 +14,29 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-//    UserDetailsServiceImpl userDetailsService;
-
-//    @Autowired
-//    PasswordEncoder passwordEncoder;
-
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-    @Qualifier("userDetailsServiceImpl")
-    @Autowired
-    private UserDetailsService userDetailsService;
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -51,14 +50,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .permitAll()
             .anyRequest()
             .authenticated()
-            .and().sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .sessionManagement()
+//            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin()
             .loginPage("/login")
             .passwordParameter("password")
-            .usernameParameter("email");
+            .usernameParameter("email")
+            .defaultSuccessUrl("/dashboard")
+        ;
     }
 
     @Override
@@ -92,8 +94,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService);
-//    }
 }

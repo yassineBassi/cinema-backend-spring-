@@ -46,22 +46,42 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
 
 
     @Override
-    public void initUsers() {
-        List<Role> roles = new ArrayList<>();
-        roles.add(new Role(null, "ADMIN"));
-        roles.add(new Role(null, "USER"));
-        roleRepository.saveAll(roles);
+    public void initRoles() {
+        roleRepository.save(new Role(null, "ADMIN"));
+        roleRepository.save(new Role(null, "USER"));
+    }
 
+    @Override
+    public void initUsers() {
+        Role admin = roleRepository.findRoleByRole("ADMIN");
+        Role user = roleRepository.findRoleByRole("USER");
+        List<Role> adminRoles = new ArrayList<>();
+        List<Role> userRoles = new ArrayList<>();
+        adminRoles.add(admin);
+        adminRoles.add(user);
+        userRoles.add(user);
         userRepository.save(
             new User(
-                new Long(1),
-                "yassine",
-                "bassi",
+                null,
+                "admin",
+                "admin",
                 "admin@admin.com",
                 passwordEncoder.encode("1234"),
                 true,
-                roles
-            ));
+                adminRoles
+            )
+        );
+        userRepository.save(
+            new User(
+                null,
+                "yassine",
+                "bassi",
+                "yassinebassii@gmail.com",
+                passwordEncoder.encode("1234"),
+                true,
+                userRoles
+            )
+        );
     }
 
     @Override
