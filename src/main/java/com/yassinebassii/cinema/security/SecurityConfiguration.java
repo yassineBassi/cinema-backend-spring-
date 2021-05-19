@@ -3,6 +3,7 @@ package com.yassinebassii.cinema.security;
 import com.yassinebassii.cinema.filter.JwtRequestFilter;
 import com.yassinebassii.cinema.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,20 +35,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
+    @Qualifier("userDetailsServiceImpl")
+    @Autowired
+    private UserDetailsService userDetailsService;
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf()
+        http
+            .csrf()
             .disable()
             .cors()
             .and()
             .authorizeRequests()
-            .antMatchers("/auth/**", "/films/**/image")
+            .antMatchers("/auth/**", "/films/**/image", "/login", "/css/**", "/webjars/**", "/images/**")
             .permitAll()
             .anyRequest()
             .authenticated()
             .and().sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+            .and()
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+            .formLogin()
+            .loginPage("/login")
+            .passwordParameter("password")
+            .usernameParameter("email");
     }
 
     @Override
@@ -56,13 +67,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    //    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService);
-//    }
-
     @Bean
-    public AuthenticationProvider authProvider(UserDetailsService userDetailsService){
+    public AuthenticationProvider authProvider(UserDetailsServiceImpl userDetailsService){
         final DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -85,4 +91,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(userDetailsService);
+//    }
 }

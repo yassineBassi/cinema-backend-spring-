@@ -1,0 +1,56 @@
+<!doctype html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/Layout"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+        layout:decorator="layout"
+        lang="en"
+>
+<head>
+  <title>Log in</title>
+  <link type="text/css" rel="stylesheet" th:href="@{css/login.css}" />
+</head>
+<body class="overflow-hidden">
+  <div layout:fragment="content" class="w-100 h-100">
+    <img class="background-image h-100" th:src="@{images/movies.jpg}">
+    <div class="row align-items-center h-100 w-100">
+      <div class="card col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-sm-1 offset-md-2 offset-lg-3 offset-xl-4 bg-dark">
+        <div class="card-header text-center">
+          <span class="title text-white d-block fw-bold"><i class="fas fa-th mx-2"></i>Dashboard</span>
+          <span class="title text-white d-block fw-bold text-start">Sign in</span>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-danger p-2" th:if="${param.error != null}">
+            <span><i class="fas fa-info-circle"></i> E-mail or password is incorrect</span>
+          </div>
+          <form method="post" th:action="@{/login}" class="text-dark">
+            <div class="form-floating mb-3">
+              <input
+                  name="email"
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  placeholder="E-mail"
+              >
+              <label for="email">E-mail</label>
+            </div>
+            <div class="form-floating">
+              <input
+                  name="password"
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  placeholder="Password"
+              >
+              <label for="password">Password</label>
+            </div>
+            <button type="submit" class="btn btn-danger form-control mt-3">
+              Sign in
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

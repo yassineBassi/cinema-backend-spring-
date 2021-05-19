@@ -1,0 +1,13 @@
+.background-image{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    filter: brightness(40%);
+    min-width: 100%;
+}
+.title{
+    font-size: 26px;
+}
+.app-title{
+    font-size: 40px;
+}

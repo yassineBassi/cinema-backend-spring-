@@ -3,6 +3,7 @@ package com.yassinebassii.cinema.service;
 import com.yassinebassii.cinema.dao.*;
 import com.yassinebassii.cinema.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -40,6 +41,9 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
     private ProjectionRepository projectionRepository;
     @Autowired
     private TicketRepository ticketRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public void initUsers() {
@@ -54,7 +58,7 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
                 "yassine",
                 "bassi",
                 "admin@admin.com",
-                "$2a$10$lFsq0QkzIg4xBhM.44H8geN6.kgIAu1HCiBHz20xEkDtRqxK0WWbu",
+                passwordEncoder.encode("1234"),
                 true,
                 roles
             ));

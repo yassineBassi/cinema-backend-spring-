@@ -98,6 +98,11 @@ public class AuthenticationController {
         User user = userRepository.findUserByEmail(userDetails.getUsername());
         return ResponseEntity.ok().body(new Response(200, "", new UserPublicInfo(user)));
     }
+
+    @GetMapping(path = "/login")
+    public String login(){
+        return "login";
+    }
 }
 
 @Data @AllArgsConstructor @NoArgsConstructor @ToString

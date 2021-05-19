@@ -2,6 +2,7 @@ package com.yassinebassii.cinema.filter;
 
 import com.yassinebassii.cinema.service.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    @Qualifier("userDetailsServiceImpl")
     @Autowired
     private  UserDetailsService userDetailsService;
 
@@ -29,6 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("---------------------filter---------------");
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
             String token = authorizationHeader.substring(7);
