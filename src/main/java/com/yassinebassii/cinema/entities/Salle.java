@@ -17,6 +17,7 @@ public class Salle implements Serializable {
     private Long id;
     @Column(length = 12)
     private String name;
+    private int nbPlaces;
     @ManyToOne
     private Cinema cinema;
     @OneToMany(mappedBy = "salle")

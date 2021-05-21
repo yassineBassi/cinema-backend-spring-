@@ -1,0 +1,31 @@
+#menu{
+    width: 300px;
+    top: 0;
+    left: -300px;
+    transition: 0.5s;
+    z-index: 2;
+    box-shadow: 0px 0px 18px rgba(0, 0, 0, 0.8);
+    position: fixed;
+}
+.list-group-item {
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: rgb(59, 57, 57);
+    color: white;
+}
+nav{
+    position: fixed;
+    z-index: 3;
+}
+.background-menu-cover{
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+}

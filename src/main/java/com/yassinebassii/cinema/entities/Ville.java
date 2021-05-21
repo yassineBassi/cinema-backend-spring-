@@ -16,7 +16,7 @@ import java.util.List;
 public class Ville extends com.yassinebassii.cinema.entities.Data implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 15)
+    @Column(length = 20)
     private String name;
     private double longitude, latitude, altitude;
     @OneToMany(mappedBy = "ville")

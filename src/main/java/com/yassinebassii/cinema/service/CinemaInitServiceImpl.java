@@ -101,6 +101,7 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
                 Cinema cinema = new Cinema();
                 cinema.setName(cinemaName);
                 cinema.setVille(v);
+                cinema.setNbSalles(new Random().nextInt(7 - 3) + 3);
                 cinemaRepository.save(cinema);
             });
         });
@@ -109,10 +110,11 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
     @Override
     public void initSalles() {
         cinemaRepository.findAll().forEach(cinema -> {
-            for (int i=0; i<new Random().nextInt(7 - 3) + 3; i++){
+            for (int i = 0; i< cinema.getNbSalles(); i++){
                 Salle salle = new Salle();
                 salle.setCinema(cinema);
                 salle.setName("Salle " + (i + 1));
+                salle.setNbPlaces(new Random().nextInt(30 - 15) + 15);
                 salleRepository.save(salle);
             }
         });
@@ -134,7 +136,7 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
     @Override
     public void initPlaces() {
         salleRepository.findAll().forEach(salle -> {
-            for (int i=0; i < new Random().nextInt(30 - 15) + 15; i++){
+            for (int i=0; i < salle.getNbPlaces(); i++){
                 Place place = new Place();
                 place.setNumero(i+1);
                 place.setSalle(salle);

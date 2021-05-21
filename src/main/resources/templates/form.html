@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/Layout"
+        layout:decorator="menu"
+        lang="en"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="menu-body" class="h-100">
+        <div class="row h-100">
+            <div class="h-100 col-10 offset-1 text-capitalize bg-white border border-secondary">
+                <div class="d-flex text-capitalize justify-content-between mt-4">
+                    <h3 th:text="${title}"></h3>
+                </div>
+                <hr class="mt-1 mb-2">
+                <form
+                    method="POST"
+                    th:action="@{'/dashboard/' + ${name} + '/store' }"
+                    class="p-2 mt-3"
+                >
+                    <div
+                        class="mb-3"
+                        th:each="attribute:${attributes}"
+                        th:if="${attribute.getName() != 'id'}"
+                    >
+                        <label
+                            th:for="${attribute.getName()}"
+                            class="form-label"
+                            th:text="${attribute.getTitle()}"
+                        ></label>
+                        <input
+                            th:type="${attribute.getType()}"
+                            class="form-control"
+                            th:id="${attribute.getName()}"
+                            th:name="${attribute.getName()}"
+                            th:placeholder="${attribute.getTitle()}"
+                            th:value="${type == 'edit' ? attribute.getValue(data) : ''}"
+                        />
+                    </div>
+                    <button type="submit" class="btn btn-primary form-control mt-3" >
+                        Sauvgarder
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

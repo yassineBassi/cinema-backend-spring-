@@ -1,0 +1,9 @@
+.pointer{
+    cursor: pointer;
+}
+.table.dashboard{
+    user-select: none;
+}
+.table.dashboard>tbody>tr>td{
+    vertical-align: middle;
+}
