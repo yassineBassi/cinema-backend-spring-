@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +38,15 @@ public class VilleController {
     }
 
     @GetMapping(path = "/dashboard/villes")
-    public String showVilles(Model model){
-        List<Ville> villes = villeRepository.findAll();
-        model.addAttribute("data", villes);
+    public String showVilles(
+        @RequestParam(name = "size", defaultValue = "12") int size,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        Model model
+    ){
+        Page<Ville> villePage = villeRepository.findAll(PageRequest.of(page, size));
+        model.addAttribute("data", villePage.getContent());
+        model.addAttribute("pages", new int[villePage.getTotalPages()]);
+        model.addAttribute("currentPage", page);
         model.addAttribute("name", "villes");
         model.addAttribute("child", "cinemas");
         model.addAttribute("attributes", attributes);

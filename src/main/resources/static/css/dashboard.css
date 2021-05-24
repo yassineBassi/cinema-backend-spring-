@@ -7,3 +7,6 @@
 .table.dashboard>tbody>tr>td{
     vertical-align: middle;
 }
+.img-thumbnail{
+    width: 80px;
+}

@@ -17,7 +17,7 @@ public class Projection implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date date;
-    private double prix;
+    private double price;
     @ManyToOne
     private Film film;
     @ManyToOne

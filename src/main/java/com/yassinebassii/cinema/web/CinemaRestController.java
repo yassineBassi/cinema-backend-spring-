@@ -38,7 +38,7 @@ public class CinemaRestController {
     @GetMapping(path = "/films/{id}/image", produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] image(@PathVariable(name = "id") Long id) throws IOException {
         Film film = filmRepository.findById(id).get();
-        File file = new File(System.getProperty("user.home") + "/cinema/images/" + film.getPhoto() + ".jpg");
+        File file = new File(System.getProperty("user.home") + film.getPhoto());
         Path path = Paths.get(file.toURI());
         return Files.readAllBytes(path);
     }

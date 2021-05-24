@@ -18,7 +18,12 @@
         <div class="d-flex justify-content-between mt-4">
           <div>
             <h3>Liste des <span th:text="${name}"></span></h3>
-            <h6 th:text="${path}"></h6>
+            <h6>
+              <span th:each="p, status:${parents}">
+                <span th:if="${!status.first}"><i class="fas fa-arrow-right mx-2"></i></span>
+                <span th:text="${p}"></span>
+              </span>
+            </h6>
           </div>
           <div>
             <a
@@ -34,7 +39,9 @@
         <table class="table dashboard table-striped table-bordered text-center table-hover pointer">
           <thead class="table-dark">
           <tr>
-            <th th:each="attribute:${attributes}">
+            <th
+                th:each="attribute:${attributes}"
+            >
               <span th:text="${attribute.getTitle()}"></span>
             </th>
             <th></th>
@@ -42,8 +49,18 @@
           </thead>
           <tbody>
             <tr th:each="d:${data}">
-              <td th:each="attribute:${attributes}">
-                <span th:text="${attribute.getValue(d)}"></span>
+              <td
+                  th:each="attribute:${attributes}"
+              >
+                <span
+                    th:text="${attribute.getValue(d)}"
+                    th:if="${attribute.getName() != thumbnail}"
+                ></span>
+                <img
+                    class="img-thumbnail"
+                    th:src="'http://127.0.0.1:8080/' + ${attribute.getValue(d)}"
+                    th:if="${attribute.getName() == thumbnail}"
+                >
               </td>
               <td class="text-end">
                 <a

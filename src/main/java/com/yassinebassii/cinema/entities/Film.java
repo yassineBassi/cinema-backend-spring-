@@ -22,7 +22,7 @@ public class Film implements Serializable {
     @Column(length = 40)
     private String realisateur;
     private Date dateSortie;
-    private double duree;
+    private double duration;
     private String photo;
     @OneToMany(mappedBy = "film")
     private Collection<Projection> projections;

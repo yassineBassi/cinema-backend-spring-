@@ -63,12 +63,13 @@ public class CinemaController {
 
     @GetMapping(path = "/dashboard/cinemas/{id}/delete")
     public String deleteCinema(@PathVariable Long id){
-        cinemaRepository.deleteById(id);
-        return "redirect:/dashboard/villes";
+        Cinema cinema = cinemaRepository.findById(id).get();
+        cinemaRepository.delete(cinema);
+        return "redirect:/dashboard/villes/" + cinema.getVille().getId() + "/cinemas";
     }
 
     @GetMapping(path = "/dashboard/cinemas/{id}/edit")
-    public String editVille(@PathVariable Long id, Model model){
+    public String editCinema(@PathVariable Long id, Model model){
         Cinema cinema = cinemaRepository.findById(id).get();
         model.addAttribute("data", cinema);
         model.addAttribute("title", "Modifier la cinema");
@@ -79,8 +80,8 @@ public class CinemaController {
     }
 
     @PostMapping(path = "/dashboard/cinemas/store")
-    public String updateVille(Cinema cinema){
-        cinemaRepository.save(cinema);
-        return "redirect:/dashboard/cinemas";
+    public String storeCinema(Cinema cinema){
+        cinema = cinemaRepository.save(cinema);
+        return "redirect:/dashboard/villes/" + cinema.getVille().getId() + "/cinemas";
     }
 }

@@ -125,7 +125,7 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
         Stream.of("10:00", "12:00", "14:30", "16:15", "18:00", "21:00").forEach(sc -> {
             Seance seance = new Seance();
             try {
-                seance.setHeurDebut(new SimpleDateFormat("HH:mm").parse(sc));
+                seance.setStartHour(new SimpleDateFormat("HH:mm").parse(sc));
                 seanceRepository.save(seance);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -163,8 +163,8 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
             Film film = new Film();
             film.setTitre(flm);
             film.setCategorie(categories.get(new Random().nextInt(categories.size())));
-            film.setDuree(durees[new Random().nextInt(durees.length)]);
-            film.setPhoto(flm.replaceAll(" ", ""));
+            film.setDuration(durees[new Random().nextInt(durees.length)]);
+            film.setPhoto("/cinema/images/" + flm.replaceAll(" ", "") + ".jpg");
             filmRepository.save(film);
         });
     }
@@ -176,13 +176,14 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
         villeRepository.findAll().forEach(ville -> {
             ville.getCinemas().forEach(cinema -> {
                 cinema.getSalles().forEach(salle -> {
+                    Film film = films.get(new Random().nextInt(films.size()));
                     seanceRepository.findAll().forEach(seance -> {
                         Projection projection = new Projection();
                         projection.setSalle(salle);
-                        projection.setFilm(films.get(new Random().nextInt(films.size())));
+                        projection.setFilm(film);
                         projection.setSeance(seance);
                         projection.setDate(new Date());
-                        projection.setPrix(prix[new Random().nextInt(prix.length)]);
+                        projection.setPrice(prix[new Random().nextInt(prix.length)]);
                         projectionRepository.save(projection);
                     });
                 });
@@ -197,7 +198,7 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
                 Ticket ticket = new Ticket();
                 ticket.setPlace(place);
                 ticket.setProjection(projection);
-                ticket.setPrix(projection.getPrix());
+                ticket.setPrice(projection.getPrice());
                 ticket.setReserve(false);
                 ticketRepository.save(ticket);
             });
