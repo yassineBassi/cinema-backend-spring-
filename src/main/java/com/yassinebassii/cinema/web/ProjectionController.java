@@ -1,9 +1,14 @@
 package com.yassinebassii.cinema.web;
 
+import com.yassinebassii.cinema.dao.FilmRepository;
 import com.yassinebassii.cinema.dao.ProjectionRepository;
 import com.yassinebassii.cinema.dao.SalleRepository;
+import com.yassinebassii.cinema.dao.SeanceRepository;
+import com.yassinebassii.cinema.entities.Film;
 import com.yassinebassii.cinema.entities.Projection;
 import com.yassinebassii.cinema.entities.Salle;
+import com.yassinebassii.cinema.entities.Seance;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,9 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,17 +33,21 @@ public class ProjectionController {
     ProjectionRepository projectionRepository;
     @Autowired
     SalleRepository salleRepository;
+    @Autowired
+    FilmRepository filmRepository;
+    @Autowired
+    SeanceRepository seanceRepository;
 
     private List<Attribute> attributes = new ArrayList<>();
 
     public ProjectionController(){
-        attributes.add(new Attribute("id", "#", "number"));
-        attributes.add(new Attribute("filmPhoto", "", "photo"));
-        attributes.add(new Attribute("date", "Nom", "date"));
-        attributes.add(new Attribute("price", "Prix", "number"));
-        attributes.add(new Attribute("filmTitle", "Film", "text"));
-        attributes.add(new Attribute("filmDuration", "Durée", "number"));
-        attributes.add(new Attribute("startHour", "début de séance", "date"));
+        attributes.add(new Attribute("id", "#", "number", false, null));
+        attributes.add(new Attribute("filmPhoto", "", "photo", false, null));
+        attributes.add(new Attribute("date", "Date", "date", true, null));
+        attributes.add(new Attribute("price", "Prix", "number", true, null));
+        attributes.add(new Attribute("filmTitle", "Film", "text", false, null));
+        attributes.add(new Attribute("filmDuration", "Durée", "number", false, null));
+        attributes.add(new Attribute("startHour", "début de séance", "date", false, null));
     }
 
     @GetMapping(path = "/dashboard/salles/{id}/projections")
@@ -61,7 +67,7 @@ public class ProjectionController {
         model.addAttribute("pages", new int[projectionPage.getTotalPages()]);
         model.addAttribute("currentPage", page);
         model.addAttribute("name", "projections");
-        model.addAttribute("child", "places");
+        model.addAttribute("child", "");
         model.addAttribute("thumbnail", "filmPhoto");
         model.addAttribute("parents", Stream.of(salle.getCinema().getVille().getName(), salle.getCinema().getName(), salle.getName())
                                     .toArray());
@@ -70,8 +76,24 @@ public class ProjectionController {
     }
 
     @GetMapping(path = "/dashboard/projections/create")
-    public String storeProjection(Model model){
-        model.addAttribute("title", "Créer un projection");
+    public String createProjection(Model model){
+        List<Film> films = filmRepository.findAll();
+        List<ListOption> filmOptions = new ArrayList<>();
+        films.forEach(film -> filmOptions.add(new ListOption(film.getId(), film.getTitre())));
+        List<ListOption> seanceOptions = new ArrayList<>();
+        List<Seance> seances = seanceRepository.findAll();
+        seances.forEach(
+            seance -> seanceOptions.add(
+                new ListOption(
+                    seance.getId(),
+                    new SimpleDateFormat("HH:mm").format(seance.getStartHour())
+                )
+            )
+        );
+
+        attributes.add(new Attribute("film", "Film", "select", true, filmOptions));
+        attributes.add(new Attribute("seance", "Séance", "select", true, seanceOptions));
+        model.addAttribute("title", "Créer une projection");
         model.addAttribute("type", "create");
         model.addAttribute("name", "places");
         model.addAttribute("attributes", attributes);
@@ -97,7 +119,7 @@ public class ProjectionController {
     }
 
     @PostMapping(path = "/dashboard/projections/store")
-    public String updateProjection(Projection projection){
+    public String storeProjection(Projection projection){
         projection = projectionRepository.save(projection);
         return "redirect:/dashboard/salles/" + projection.getSalle().getId() + "/places";
     }
@@ -123,3 +145,4 @@ class ProjectionForm{
         this.startHour = new SimpleDateFormat("HH:mm:ss").format(projection.getSeance().getStartHour());
     }
 }
+

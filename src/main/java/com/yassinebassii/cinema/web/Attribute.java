@@ -9,14 +9,24 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 @Data
-@AllArgsConstructor
 @ToString
 class Attribute {
-    String name;
-    String title;
-    String type;
+    private String name;
+    private String title;
+    private String type;
+    private boolean write;
+    private List<ListOption> options;
+
+    public Attribute(String name, String title, String type, boolean write, List<ListOption> options) {
+        this.name = name;
+        this.title = title;
+        this.type = type;
+        this.write = write;
+        this.options = options;
+    }
 
     public Object getValue(Object object) throws InvocationTargetException, IllegalAccessException, IntrospectionException, NoSuchFieldException {
         Field field = object.getClass().getDeclaredField(name);

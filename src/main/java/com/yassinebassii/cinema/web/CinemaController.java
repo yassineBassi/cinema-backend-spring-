@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Controller
 public class CinemaController {
@@ -25,12 +26,17 @@ public class CinemaController {
     private List<Attribute> attributes = new ArrayList<>();
 
     public CinemaController(){
-        attributes.add(new Attribute("id", "#", "number"));
-        attributes.add(new Attribute("name", "Nom", "text"));
-        attributes.add(new Attribute("longitude", "Longitude", "number"));
-        attributes.add(new Attribute("latitude", "Latitude", "number"));
-        attributes.add(new Attribute("altitude", "Altitude", "number"));
-        attributes.add(new Attribute("nbSalles", "Les salles", "number"));
+        attributes.add(new Attribute("id", "#", "number", false, null));
+        attributes.add(new Attribute("name", "Nom", "text", true, null));
+        attributes.add(new Attribute("longitude", "Longitude", "number", true, null));
+        attributes.add(new Attribute("latitude", "Latitude", "number", true, null));
+        attributes.add(new Attribute("altitude", "Altitude", "number", true, null));
+        attributes.add(new Attribute("nbSalles", "Les salles", "number", false, null));
+    }
+
+    @GetMapping(path = "/")
+    public String index(){
+        return "redirect:/dashboard";
     }
 
     @GetMapping(path = "/dashboard/villes/{id}/cinemas")
@@ -47,17 +53,16 @@ public class CinemaController {
         model.addAttribute("currentPage", page);
         model.addAttribute("name", "cinemas");
         model.addAttribute("child", "salles");
-        model.addAttribute("path", ville.getName());
+        model.addAttribute("parent", "villes");
+        model.addAttribute("parentId", id);
+        model.addAttribute("parents", Stream.of(ville.getName()).toArray());
         model.addAttribute("attributes", attributes);
         return "dashboard";
     }
 
-    @GetMapping(path = "/dashboard/cinemas/create")
-    public String storeCinema(Model model){
-        model.addAttribute("title", "Créer une Ville");
-        model.addAttribute("type", "create");
-        model.addAttribute("name", "villes");
-        model.addAttribute("attributes", attributes);
+    @GetMapping(path = "/dashboard/villes/{id}/cinemas/create")
+    public String createCinema(Model model, @PathVariable Long id){
+        formModel(model, "Créer une Cinéma", "create", new Cinema(), id);
         return "form";
     }
 
@@ -71,17 +76,25 @@ public class CinemaController {
     @GetMapping(path = "/dashboard/cinemas/{id}/edit")
     public String editCinema(@PathVariable Long id, Model model){
         Cinema cinema = cinemaRepository.findById(id).get();
-        model.addAttribute("data", cinema);
-        model.addAttribute("title", "Modifier la cinema");
-        model.addAttribute("name", "villes");
-        model.addAttribute("type", "edit");
-        model.addAttribute("attributes", attributes);
+        formModel(model, "Modifier la cinema", "edit", cinema, cinema.getVille().getId());
         return "form";
     }
 
-    @PostMapping(path = "/dashboard/cinemas/store")
-    public String storeCinema(Cinema cinema){
+    @PostMapping(path = "/dashboard/villes/{id}/cinemas/store")
+    public String storeCinema(Cinema cinema, @PathVariable Long id){
+        Ville ville = villeRepository.findById(id).get();
+        cinema.setVille(ville);
         cinema = cinemaRepository.save(cinema);
         return "redirect:/dashboard/villes/" + cinema.getVille().getId() + "/cinemas";
+    }
+
+    public void formModel(Model model, String title, String type, Cinema cinema, Long parentId){
+        model.addAttribute("data", cinema);
+        model.addAttribute("title", title);
+        model.addAttribute("type", type);
+        model.addAttribute("name", "cinemas");
+        model.addAttribute("parent", "villes");
+        model.addAttribute("parentId", parentId);
+        model.addAttribute("attributes", attributes);
     }
 }

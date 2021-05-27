@@ -30,11 +30,11 @@ public class VilleController {
     private List<Attribute> attributes = new ArrayList<>();
 
     public VilleController(){
-        attributes.add(new Attribute("id", "#", "number"));
-        attributes.add(new Attribute("name", "Nom", "text"));
-        attributes.add(new Attribute("longitude", "Longitude", "number"));
-        attributes.add(new Attribute("latitude", "Latitude", "number"));
-        attributes.add(new Attribute("altitude", "Altitude", "number"));
+        attributes.add(new Attribute("id", "#", "number", false, null));
+        attributes.add(new Attribute("name", "Nom", "text", true, null));
+        attributes.add(new Attribute("longitude", "Longitude", "number", true, null));
+        attributes.add(new Attribute("latitude", "Latitude", "number", true, null));
+        attributes.add(new Attribute("altitude", "Altitude", "number", true, null));
     }
 
     @GetMapping(path = "/dashboard/villes")

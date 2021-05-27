@@ -13,26 +13,29 @@
     <div layout:fragment="menu-body" class="h-100">
         <div class="row h-100">
             <div class="h-100 col-10 offset-1 text-capitalize bg-white border border-secondary">
-                <div class="d-flex text-capitalize justify-content-between mt-4">
+                <div class="d-flex text-capitalize bg-dark text-white p-2 rounded-3 justify-content-between mt-4">
                     <h3 th:text="${title}"></h3>
                 </div>
                 <hr class="mt-1 mb-2">
                 <form
                     method="POST"
-                    th:action="@{'/dashboard/' + ${name} + '/store' }"
+                    th:action="@{'/dashboard/' + ${parent} + '/' + ${parentId} + '/' + ${name} + '/store' }"
                     class="p-2 mt-3"
                 >
                     <div
                         class="mb-3"
                         th:each="attribute:${attributes}"
-                        th:if="${attribute.getName() != 'id'}"
+                        th:if="${attribute.isWrite() || attribute.getName() == 'id'}"
                     >
                         <label
                             th:for="${attribute.getName()}"
+                            th:if="${attribute.getName() != 'id'}"
                             class="form-label"
                             th:text="${attribute.getTitle()}"
                         ></label>
                         <input
+                            th:hidden="${attribute.getName() == 'id'}"
+                            th:if="${attribute.getType() != 'select'}"
                             th:type="${attribute.getType()}"
                             class="form-control"
                             th:id="${attribute.getName()}"
@@ -40,6 +43,15 @@
                             th:placeholder="${attribute.getTitle()}"
                             th:value="${type == 'edit' ? attribute.getValue(data) : ''}"
                         />
+                        <select
+                            th:if="${attribute.getType() == 'select'}"
+                            class="form-control"
+                        >
+                            <option
+                                th:each="option:${attribute.getOptions()}"
+                                th:text="${option.getName()}"
+                            ></option>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary form-control mt-3" >
                         Sauvgarder

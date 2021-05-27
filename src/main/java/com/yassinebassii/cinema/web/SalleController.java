@@ -31,9 +31,9 @@ public class SalleController {
     private List<Attribute> attributes = new ArrayList<>();
 
     public SalleController(){
-        attributes.add(new Attribute("id", "#", "number"));
-        attributes.add(new Attribute("name", "Nom", "text"));
-        attributes.add(new Attribute("nbPlaces", "Les places", "number"));
+        attributes.add(new Attribute("id", "#", "number", false, null));
+        attributes.add(new Attribute("name", "Nom", "text", true, null));
+        attributes.add(new Attribute("nbPlaces", "Les places", "number", false, null));
     }
 
     @GetMapping(path = "/dashboard/cinemas/{id}/salles")
@@ -54,16 +54,15 @@ public class SalleController {
                 cinema.getVille().getName(),
                 cinema.getName())
         .toArray());
+        model.addAttribute("parent", "cinemas");
+        model.addAttribute("parentId", id);
         model.addAttribute("attributes", attributes);
         return "dashboard";
     }
 
-    @GetMapping(path = "/dashboard/salles/create")
-    public String storeSalle(Model model){
-        model.addAttribute("title", "Créer une Salle");
-        model.addAttribute("type", "create");
-        model.addAttribute("name", "salles");
-        model.addAttribute("attributes", attributes);
+    @GetMapping(path = "/dashboard/cinemas/{id}/salles/create")
+    public String createSalle(Model model, @PathVariable Long id){
+        formModel(model, "Créer une Salle", "create", new Salle(), id);
         return "form";
     }
 
@@ -77,17 +76,25 @@ public class SalleController {
     @GetMapping(path = "/dashboard/salles/{id}/edit")
     public String editSalle(@PathVariable Long id, Model model){
         Salle salle = salleRepository.findById(id).get();
-        model.addAttribute("data", salle);
-        model.addAttribute("title", "Modifier la Salle");
-        model.addAttribute("name", "salles");
-        model.addAttribute("type", "edit");
-        model.addAttribute("attributes", attributes);
+        formModel(model, "Modifier la Salle", "edit", salle, salle.getCinema().getId());
         return "form";
     }
 
-    @PostMapping(path = "/dashboard/salles/store")
-    public String updateSalle(Salle salle){
+    @PostMapping(path = "/dashboard/cinemas/{id}/salles/store")
+    public String storeSalle(Salle salle, @PathVariable Long id){
+        Cinema cinema = cinemaRepository.findById(id).get();
+        salle.setCinema(cinema);
         salle = salleRepository.save(salle);
         return "redirect:/dashboard/cinemas/" + salle.getCinema().getId() + "/salles";
+    }
+
+    public void formModel(Model model, String title, String type, Salle salle, Long parentId){
+        model.addAttribute("data", salle);
+        model.addAttribute("title", title);
+        model.addAttribute("type", type);
+        model.addAttribute("name", "salles");
+        model.addAttribute("parent", "cinemas");
+        model.addAttribute("parentId", parentId);
+        model.addAttribute("attributes", attributes);
     }
 }
