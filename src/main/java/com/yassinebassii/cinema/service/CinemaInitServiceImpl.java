@@ -161,10 +161,13 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
         Stream.of("Ip Man 4", "Outside the wire", "Chemical Hearts", "Underground", "Without Remorse")
         .forEach(flm -> {
             Film film = new Film();
-            film.setTitre(flm);
+            film.setTitle(flm);
+            film.setDescription(flm + " description");
+            film.setDirector(flm + " director");
+            film.setReleaseDate(new Date());
             film.setCategorie(categories.get(new Random().nextInt(categories.size())));
             film.setDuration(durees[new Random().nextInt(durees.length)]);
-            film.setPhoto("/cinema/images/" + flm.replaceAll(" ", "") + ".jpg");
+            film.setPhoto(flm.replaceAll(" ", "") + ".jpg");
             filmRepository.save(film);
         });
     }

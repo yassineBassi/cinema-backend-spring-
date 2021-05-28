@@ -79,7 +79,7 @@ public class ProjectionController {
     public String createProjection(Model model){
         List<Film> films = filmRepository.findAll();
         List<ListOption> filmOptions = new ArrayList<>();
-        films.forEach(film -> filmOptions.add(new ListOption(film.getId(), film.getTitre())));
+        films.forEach(film -> filmOptions.add(new ListOption(film.getId(), film.getTitle())));
         List<ListOption> seanceOptions = new ArrayList<>();
         List<Seance> seances = seanceRepository.findAll();
         seances.forEach(
@@ -139,7 +139,7 @@ class ProjectionForm{
         this.id = projection.getId();
         this.date = projection.getDate();
         this.price = projection.getPrice();
-        this.filmTitle = projection.getFilm().getTitre();
+        this.filmTitle = projection.getFilm().getTitle();
         this.filmPhoto = "films/" + projection.getFilm().getId() + "/image";
         this.filmDuration = projection.getFilm().getDuration();
         this.startHour = new SimpleDateFormat("HH:mm:ss").format(projection.getSeance().getStartHour());

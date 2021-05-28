@@ -10,3 +10,6 @@
 .img-thumbnail{
     width: 80px;
 }
+.dash-container{
+    min-height: 100%!important;
+}

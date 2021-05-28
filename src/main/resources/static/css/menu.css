@@ -17,7 +17,7 @@
     background-color: rgb(59, 57, 57);
     color: white;
 }
-nav{
+.menu-nav{
     position: fixed;
     z-index: 1;
 }
@@ -28,4 +28,7 @@ nav{
     top: 0px;
     left: 0px;
     display: none;
+}
+.container-fluid{
+    min-height: 100%!important;
 }

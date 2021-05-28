@@ -6,21 +6,21 @@
         lang="en"
 >
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/form.css}">
+    <script th:src="@{/js/form.js}"></script>
 </head>
 <body>
     <div layout:fragment="menu-body" class="h-100">
         <div class="row h-100">
-            <div class="h-100 col-10 offset-1 text-capitalize bg-white border border-secondary">
+            <div class="form-container col-10 offset-1 text-capitalize bg-white border border-secondary">
                 <div class="d-flex text-capitalize bg-dark text-white p-2 rounded-3 justify-content-between mt-4">
                     <h3 th:text="${title}"></h3>
                 </div>
-                <hr class="mt-1 mb-2">
                 <form
                     method="POST"
-                    th:action="@{'/dashboard/' + ${parent} + '/' + ${parentId} + '/' + ${name} + '/store' }"
-                    class="p-2 mt-3"
+                    th:action="@{'/dashboard/' + ${parent != null  && parentId != null ? (parent + '/' + parentId) + '/'  : ''}+ ${name} + '/store' }"
+                    enctype="multipart/form-data"
+                    class="px-2 pb-3"
                 >
                     <div
                         class="mb-3"
@@ -33,25 +33,48 @@
                             class="form-label"
                             th:text="${attribute.getTitle()}"
                         ></label>
-                        <input
-                            th:hidden="${attribute.getName() == 'id'}"
-                            th:if="${attribute.getType() != 'select'}"
-                            th:type="${attribute.getType()}"
-                            class="form-control"
-                            th:id="${attribute.getName()}"
-                            th:name="${attribute.getName()}"
-                            th:placeholder="${attribute.getTitle()}"
-                            th:value="${type == 'edit' ? attribute.getValue(data) : ''}"
-                        />
-                        <select
-                            th:if="${attribute.getType() == 'select'}"
-                            class="form-control"
+                        <div
+                            th:if="${attribute.getType() == 'file'}"
                         >
-                            <option
-                                th:each="option:${attribute.getOptions()}"
-                                th:text="${option.getName()}"
-                            ></option>
-                        </select>
+                            <img
+                                th:id="'file-' + ${attribute.getName()}"
+                                th:class="'image my-2 mb-3 ' + ${attribute.getValue(data) == null ? 'd-none' : 'd-block'}"
+                                th:src="@{'/' + ${attribute.getValue(data)}}"
+                            >
+                        </div>
+                        <section th:switch="${attribute.getType()}">
+                            <select
+                                th:case="'select'"
+                                th:name="${attribute.getName()} + 'Id'"
+                                class="form-control"
+                            >
+                                <option
+                                    th:each="option:${attribute.getOptions()}"
+                                    th:value="${option.getId()}"
+                                    th:selected="${attribute.getValue(data) != null && option.getId() == attribute.getValue(data).getId()}"
+                                    th:text="${option.getName()}"
+                                ></option>
+                            </select>
+                            <textarea
+                                th:case="'textarea'"
+                                class="form-control"
+                                th:id="${attribute.getName()}"
+                                th:name="${attribute.getName()}"
+                                th:placeholder="${attribute.getTitle()}"
+                                th:text="${type == 'edit' ? attribute.getValue(data) : null}"
+                            ></textarea>
+                            <input
+                                th:hidden="${attribute.getName() == 'id'}"
+                                th:case="*"
+                                th:type="${attribute.getType()}"
+                                class="form-control"
+                                th:id="${attribute.getName()}"
+                                th:name="${attribute.getName() + (attribute.getType() == 'file' ? '-file' : '')}"
+                                th:placeholder="${attribute.getTitle()}"
+                                th:value="${type == 'edit' ? attribute.getValue(data) : ''}"
+                                th:onchange="${attribute.getType() == 'file'} ? 'test(event)' : ''"
+                            />
+                        </section>
                     </div>
                     <button type="submit" class="btn btn-primary form-control mt-3" >
                         Sauvgarder

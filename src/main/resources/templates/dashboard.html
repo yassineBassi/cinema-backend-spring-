@@ -14,11 +14,11 @@
 <body>
   <div layout:fragment="menu-body" class="h-100">
     <div class="row h-100">
-      <div class="col-10 offset-1 h-100 text-capitalize bg-white border border-secondary">
+      <div class="col-10 offset-1 text-capitalize bg-white border border-secondary dash-container">
         <div class="d-flex justify-content-between mt-4">
           <div>
             <h3>Liste des <span th:text="${name}"></span></h3>
-            <h6>
+            <h6 th:if="${parents}">
               <span th:each="p, status:${parents}">
                 <span th:if="${!status.first}"><i class="fas fa-arrow-right mx-2"></i></span>
                 <span th:text="${p}"></span>
@@ -28,7 +28,7 @@
           <div>
             <a
               class="btn btn-primary"
-              th:href="@{'/dashboard/' + ${parent} + '/' + ${parentId} + '/' + ${name} + '/create'}"
+              th:href="@{'/dashboard/' + ${parent != null && parentId != null ? (parent + '/' + parentId + '/') : '' } + ${name} + '/create'}"
             >
               <i class="fas fa-plus mx-1"></i>
               Créer
@@ -36,6 +36,24 @@
           </div>
         </div>
         <hr class="mt-1 mb-2">
+        <div class="d-flex justify-content-center">
+          <nav>
+            <ul class="pagination">
+              <li
+                      th:class="${currentPage == status.index} ? 'active page-item' : ''"
+                      class="page-item"
+                      th:each="page, status:${pages}"
+              >
+                <a
+                        th:href="@{${name}(page = ${status.index})}"
+                        class="page-link"
+                        th:text="${status.index + 1}"
+                >
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
         <table class="table dashboard table-striped table-bordered text-center table-hover pointer">
           <thead class="table-dark">
           <tr>
@@ -54,17 +72,17 @@
               >
                 <span
                     th:text="${attribute.getValue(d)}"
-                    th:if="${attribute.getName() != thumbnail}"
+                    th:if="${attribute.getType() != 'file'}"
                 ></span>
                 <img
                     class="img-thumbnail"
-                    th:src="'http://127.0.0.1:8080/' + ${attribute.getValue(d)}"
-                    th:if="${attribute.getName() == thumbnail}"
+                    th:src="@{'/' + ${attribute.getValue(d)}}"
+                    th:if="${attribute.getType() == 'file'}"
                 >
               </td>
               <td class="text-end">
                 <a
-                  th:if="${child != ''}"
+                  th:if="${child != null}"
                   th:href="@{'/dashboard/' + ${name} + '/' + ${d.getId()} + '/' + ${child}}"
                   class="btn btn-warning btn-sm"
                 >
@@ -87,24 +105,6 @@
             </tr>
           </tbody>
         </table>
-        <div class="d-flex justify-content-center">
-          <nav>
-            <ul class="pagination">
-              <li
-                  th:class="${currentPage == status.index} ? 'active page-item' : ''"
-                  class="page-item"
-                  th:each="page, status:${pages}"
-              >
-                <a
-                  th:href="@{${name}(page = ${status.index})}"
-                  class="page-link"
-                  th:text="${status.index + 1}"
-                >
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
       </div>
     </div>
   </div>
