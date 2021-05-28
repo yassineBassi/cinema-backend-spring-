@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
-@Data @NoArgsConstructor @ToString @AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor @ToString(exclude = {"salles"})
 public class Cinema implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

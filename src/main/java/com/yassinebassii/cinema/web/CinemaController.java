@@ -56,6 +56,7 @@ public class CinemaController {
         model.addAttribute("parent", "villes");
         model.addAttribute("parentId", id);
         model.addAttribute("parents", Stream.of(ville.getName()).toArray());
+        model.addAttribute("backUrl", "/villes");
         model.addAttribute("attributes", attributes);
         return "dashboard";
     }

@@ -33,7 +33,7 @@ public class SalleController {
     public SalleController(){
         attributes.add(new Attribute("id", "#", "number", false, null));
         attributes.add(new Attribute("name", "Nom", "text", true, null));
-        attributes.add(new Attribute("nbPlaces", "Les places", "number", false, null));
+        attributes.add(new Attribute("nbPlaces", "Nombre des places", "number", false, null));
     }
 
     @GetMapping(path = "/dashboard/cinemas/{id}/salles")
@@ -45,17 +45,22 @@ public class SalleController {
     ){
         Cinema cinema = cinemaRepository.findById(id).get();
         Page<Salle> sallePage = salleRepository.findSalleByCinema(cinema, PageRequest.of(page, size));
+
+        List<DashButton> dashButtons = new ArrayList<>();
+        dashButtons.add(new DashButton("", "btn btn-sm mx-2 btn-primary", "fas fa-layer-group", "projections"));
         model.addAttribute("data", sallePage.getContent());
         model.addAttribute("pages", new int[sallePage.getTotalPages()]);
         model.addAttribute("currentPage", page);
         model.addAttribute("name", "salles");
-        model.addAttribute("child", "projections");
+        model.addAttribute("child", "places");
         model.addAttribute("parents", Stream.of(
                 cinema.getVille().getName(),
                 cinema.getName())
         .toArray());
         model.addAttribute("parent", "cinemas");
         model.addAttribute("parentId", id);
+        model.addAttribute("backUrl", "/villes/" + cinema.getVille().getId() + "/cinemas");
+        model.addAttribute("buttons", dashButtons);
         model.addAttribute("attributes", attributes);
         return "dashboard";
     }

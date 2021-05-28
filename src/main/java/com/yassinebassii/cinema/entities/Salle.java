@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor @NoArgsConstructor @ToString @Data
+@AllArgsConstructor @NoArgsConstructor @Data @ToString(exclude = {"places", "projections"})
 public class Salle implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

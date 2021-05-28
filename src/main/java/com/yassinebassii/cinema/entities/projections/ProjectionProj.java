@@ -1,5 +1,7 @@
-package com.yassinebassii.cinema.entities;
+package com.yassinebassii.cinema.entities.projections;
 
+import com.yassinebassii.cinema.entities.Film;
+import com.yassinebassii.cinema.entities.Seance;
 import org.springframework.data.rest.core.config.Projection;
 
 import java.util.List;

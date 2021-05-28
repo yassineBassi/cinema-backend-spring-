@@ -23,7 +23,7 @@
                   th:href="@{'/dashboard' + ${backUrl}}"
                   class="pointer text-dark back-icon"
               >
-                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-chevron-left"></i>
               </a>
               Liste des <span th:text="${name}"></span></h3>
             <h6 th:if="${parents}">
@@ -89,6 +89,14 @@
                 >
               </td>
               <td class="text-end">
+                <a
+                  th:if="${buttons != null}"
+                  th:each="button:${buttons}"
+                  th:class="${button.getCssClass()}"
+                  th:href="@{'/dashboard/' + ${name} + '/' + ${d.getId()} + '/' + ${button.getLink()} }"
+                >
+                  <i th:class="${button.getIcon()}"></i>
+                </a>
                 <a
                   th:if="${child != null}"
                   th:href="@{'/dashboard/' + ${name} + '/' + ${d.getId()} + '/' + ${child}}"

@@ -138,7 +138,7 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
         salleRepository.findAll().forEach(salle -> {
             for (int i=0; i < salle.getNbPlaces(); i++){
                 Place place = new Place();
-                place.setNumero(i+1);
+                place.setNumber(i+1);
                 place.setSalle(salle);
                 placeRepository.save(place);
             }

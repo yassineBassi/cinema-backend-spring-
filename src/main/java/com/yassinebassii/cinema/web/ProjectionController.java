@@ -13,6 +13,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ public class ProjectionController {
 
     public ProjectionController(){
         attributes.add(new Attribute("id", "#", "number", false, null));
-        attributes.add(new Attribute("filmPhoto", "", "photo", false, null));
+        attributes.add(new Attribute("filmPhoto", "", "file", false, null));
         attributes.add(new Attribute("date", "Date", "date", true, null));
         attributes.add(new Attribute("price", "Prix", "number", true, null));
         attributes.add(new Attribute("filmTitle", "Film", "text", false, null));
@@ -66,37 +67,20 @@ public class ProjectionController {
         model.addAttribute("data", projections);
         model.addAttribute("pages", new int[projectionPage.getTotalPages()]);
         model.addAttribute("currentPage", page);
+        model.addAttribute("child", "places");
         model.addAttribute("name", "projections");
-        model.addAttribute("child", "");
-        model.addAttribute("thumbnail", "filmPhoto");
         model.addAttribute("parents", Stream.of(salle.getCinema().getVille().getName(), salle.getCinema().getName(), salle.getName())
                                     .toArray());
+        model.addAttribute("parent", "salles");
+        model.addAttribute("parentId", id);
+        model.addAttribute("backUrl", "/cinemas/" + salle.getCinema().getId() + "/salles");
         model.addAttribute("attributes", attributes);
         return "dashboard";
     }
 
-    @GetMapping(path = "/dashboard/projections/create")
-    public String createProjection(Model model){
-        List<Film> films = filmRepository.findAll();
-        List<ListOption> filmOptions = new ArrayList<>();
-        films.forEach(film -> filmOptions.add(new ListOption(film.getId(), film.getTitle())));
-        List<ListOption> seanceOptions = new ArrayList<>();
-        List<Seance> seances = seanceRepository.findAll();
-        seances.forEach(
-            seance -> seanceOptions.add(
-                new ListOption(
-                    seance.getId(),
-                    new SimpleDateFormat("HH:mm").format(seance.getStartHour())
-                )
-            )
-        );
-
-        attributes.add(new Attribute("film", "Film", "select", true, filmOptions));
-        attributes.add(new Attribute("seance", "Séance", "select", true, seanceOptions));
-        model.addAttribute("title", "Créer une projection");
-        model.addAttribute("type", "create");
-        model.addAttribute("name", "places");
-        model.addAttribute("attributes", attributes);
+    @GetMapping(path = "/dashboard/salles/{id}/projections/create")
+    public String createProjection(Model model, @PathVariable Long id){
+        formModel(model, "Créer une projection", "create", new Projection(), id);
         return "form";
     }
 
@@ -110,25 +94,66 @@ public class ProjectionController {
     @GetMapping(path = "/dashboard/projections/{id}/edit")
     public String editProjection(@PathVariable Long id, Model model){
         Projection projection = projectionRepository.findById(id).get();
-        model.addAttribute("data", projection);
-        model.addAttribute("title", "Modifier la prjection");
-        model.addAttribute("name", "projections");
-        model.addAttribute("type", "edit");
-        model.addAttribute("attributes", attributes);
+        formModel(model, "odifier la prjection", "edit", projection, projection.getSalle().getId());
         return "form";
     }
 
-    @PostMapping(path = "/dashboard/projections/store")
-    public String storeProjection(Projection projection){
+    @PostMapping(path = "/dashboard/salles/{id}/projections/store")
+    public String storeProjection(
+            Projection projection,
+            @PathVariable Long id,
+            @RequestParam Long filmId,
+            @RequestParam Long seanceId
+    ){
+        System.out.println("---------------------------------");
+        System.out.println(id);
+        System.out.println(salleRepository.findById(id));
+        Salle salle = salleRepository.findById(id).get();
+        System.out.println(salle);
+        Film film = filmRepository.findById(filmId).get();
+        Seance seance = seanceRepository.findById(seanceId).get();
+
+        projection.setSalle(salle);
+        projection.setFilm(film);
+        projection.setSeance(seance);
         projection = projectionRepository.save(projection);
-        return "redirect:/dashboard/salles/" + projection.getSalle().getId() + "/places";
+        return "redirect:/dashboard/salles/" + projection.getSalle().getId() + "/projections";
+    }
+
+    public void formModel(Model model, String title, String type, Projection projection, Long parentId){
+        List<Film> films = filmRepository.findAll();
+        List<ListOption> filmOptions = new ArrayList<>();
+        films.forEach(film -> filmOptions.add(new ListOption(film.getId(), film.getTitle())));
+        List<ListOption> seanceOptions = new ArrayList<>();
+        List<Seance> seances = seanceRepository.findAll();
+        seances.forEach(
+                seance -> seanceOptions.add(
+                        new ListOption(
+                                seance.getId(),
+                                new SimpleDateFormat("HH:mm").format(seance.getStartHour())
+                        )
+                )
+        );
+        List<Attribute> attributesCopy = new ArrayList<>();
+        attributesCopy.addAll(attributes);
+
+        attributesCopy.add(new Attribute("film", "Film", "select", true, filmOptions));
+        attributesCopy.add(new Attribute("seance", "Séance", "select", true, seanceOptions));
+
+        model.addAttribute("data", projection);
+        model.addAttribute("title", title);
+        model.addAttribute("type", type);
+        model.addAttribute("name", "projections");
+        model.addAttribute("parent", "salles");
+        model.addAttribute("parentId", parentId);
+        model.addAttribute("attributes", attributesCopy);
     }
 }
 
 @Data
 class ProjectionForm{
     private Long id;
-    private Date date;
+    private String date;
     private double price;
     private String filmTitle;
     private String filmPhoto;
@@ -137,7 +162,7 @@ class ProjectionForm{
 
     public ProjectionForm(Projection projection){
         this.id = projection.getId();
-        this.date = projection.getDate();
+        this.date = new SimpleDateFormat("yyyy-MM-dd").format(projection.getDate());
         this.price = projection.getPrice();
         this.filmTitle = projection.getFilm().getTitle();
         this.filmPhoto = "films/" + projection.getFilm().getId() + "/image";
