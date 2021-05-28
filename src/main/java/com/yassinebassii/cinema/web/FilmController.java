@@ -44,53 +44,56 @@ public class FilmController {
         attributes.add(new Attribute("duration", "Durée", "number", true, null));
     }
 
-    @GetMapping(path = "/dashboard/films")
+    @GetMapping(path = "/dashboard/categories/{id}/films")
     public String showCinemas(
             @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            Model model
+            Model model,
+            @PathVariable Long id
     ){
-        Page<Film> filmPage = filmRepository.findAll(PageRequest.of(page, size));
-        List<Film> films = filmPage.getContent();
-        films.forEach(film -> film.setPhoto("films/" + film.getId() + "/image"));
+        Categorie categorie = categorieRepository.findById(id).get();
+        Page<Film> filmPage = filmRepository.findFilmByCategorie(categorie, PageRequest.of(page, size));
+        filmPage.getContent().forEach(film -> film.setPhoto("films/" + film.getId() + "/image"));
         model.addAttribute("data", filmPage.getContent());
         model.addAttribute("pages", new int[filmPage.getTotalPages()]);
         model.addAttribute("currentPage", page);
         model.addAttribute("name", "films");
+        model.addAttribute("parent", "categories");
+        model.addAttribute("parentId", id);
+        model.addAttribute("parents", Stream.of(categorie.getName()).toArray());
+        model.addAttribute("backUrl", "/categories");
         model.addAttribute("attributes", attributes);
         return "dashboard";
     }
 
-    private List<ListOption> categorieOptions(){
-        List<Categorie> categories = categorieRepository.findAll();
-        List<ListOption> categorieOptions = new ArrayList<>();
-        categories.forEach(categorie -> categorieOptions.add(new ListOption(categorie.getId(), categorie.getName())));
-        return categorieOptions;
-    }
-
-    @GetMapping(path = "/dashboard/films/create")
-    public String createFilm(Model model){
-        formModel(model, "Créer un film", "create", new Film());
+    @GetMapping(path = "/dashboard/categories/{id}/films/create")
+    public String createFilm(Model model, @PathVariable Long id){
+        formModel(model, "Créer un film", "create", new Film(), id);
         return "form";
     }
 
     @GetMapping(path = "/dashboard/films/{id}/delete")
     public String deleteCinema(@PathVariable Long id){
+        Film film = filmRepository.findById(id).get();
         filmRepository.deleteById(id);
-        return "redirect:/dashboard/films";
+        return "redirect:/dashboard/categories/" + film.getCategorie().getName() + "/films";
     }
 
     @GetMapping(path = "/dashboard/films/{id}/edit")
     public String editCinema(@PathVariable Long id, Model model){
         Film film = filmRepository.findById(id).get();
         film.setPhoto("films/" + film.getId() + "/image");
-        formModel(model, "Modifier le film", "edit", film);
+        formModel(model, "Modifier le film", "edit", film, film.getCategorie().getId());
         return "form";
     }
 
-    @PostMapping(path = "/dashboard/films/store")
-    public String storeFilm(Film film, @RequestParam("photo-file") MultipartFile image, @RequestParam("categorieId") Long categorieId) throws IOException {
-        Categorie categorie = categorieRepository.findById(categorieId).get();
+    @PostMapping(path = "/dashboard/categories/{id}/films/store")
+    public String storeFilm(
+            Film film,
+            @PathVariable Long id,
+            @RequestParam("photo-file") MultipartFile image
+    ) throws IOException {
+        Categorie categorie = categorieRepository.findById(id).get();
         film.setCategorie(categorie);
 
         if (image.getOriginalFilename().length() != 0){
@@ -107,18 +110,16 @@ public class FilmController {
         }
 
         filmRepository.save(film);
-        return "redirect:/dashboard/films";
+        return "redirect:/dashboard/categories/" + id + "/films";
     }
 
-    public void formModel(Model model, String title, String type, Film film){
-        List<Attribute> attributesCopy = new ArrayList<>();
-        attributesCopy.addAll(attributes);
-        attributesCopy.add(new Attribute("categorie", "Categorie", "select", true, categorieOptions()));
-        System.out.println(attributesCopy);
+    public void formModel(Model model, String title, String type, Film film, Long parentId){
         model.addAttribute("data", film);
         model.addAttribute("title", title);
         model.addAttribute("type", type);
         model.addAttribute("name", "films");
-        model.addAttribute("attributes", attributesCopy);
+        model.addAttribute("parent", "categories");
+        model.addAttribute("parentId", parentId);
+        model.addAttribute("attributes", attributes);
     }
 }

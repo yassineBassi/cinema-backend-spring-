@@ -17,7 +17,15 @@
       <div class="col-10 offset-1 text-capitalize bg-white border border-secondary dash-container">
         <div class="d-flex justify-content-between mt-4">
           <div>
-            <h3>Liste des <span th:text="${name}"></span></h3>
+            <h3>
+              <a
+                  th:if="${backUrl != null}"
+                  th:href="@{'/dashboard' + ${backUrl}}"
+                  class="pointer text-dark back-icon"
+              >
+                <i class="fas fa-arrow-left"></i>
+              </a>
+              Liste des <span th:text="${name}"></span></h3>
             <h6 th:if="${parents}">
               <span th:each="p, status:${parents}">
                 <span th:if="${!status.first}"><i class="fas fa-arrow-right mx-2"></i></span>
