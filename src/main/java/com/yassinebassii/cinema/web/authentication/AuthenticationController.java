@@ -63,7 +63,9 @@ public class AuthenticationController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
         String jwt = jwtutil.generateToken(userDetails);
         User user = userRepository.findUserByEmail(userDetails.getUsername());
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwt, new UserPublicInfo(user));
+        List<String> roles = new ArrayList<>();
+        user.getRoles().forEach(role -> roles.add(role.getRole()));
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwt, new UserPublicInfo(user), roles);
         return ResponseEntity.ok().body(new Response(200, "", authenticationResponse));
     }
 

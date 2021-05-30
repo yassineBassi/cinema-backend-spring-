@@ -14,9 +14,9 @@ public class Ticket implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 40)
-    private String nomClient;
+    private String clientName;
     private double price;
-    private Integer codePayement;
+    private Integer codePayment;
     private boolean reserve;
     @ManyToOne
     private Place place;

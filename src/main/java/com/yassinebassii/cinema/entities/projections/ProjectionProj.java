@@ -9,7 +9,7 @@ import java.util.List;
 @Projection(name="p1", types = {com.yassinebassii.cinema.entities.Projection.class})
 public interface ProjectionProj {
     Long getId();
-    double getPrix();
+    double getPrice();
     Film getFilm();
     Seance getSeance();
     List<TicketProj> getTickets();

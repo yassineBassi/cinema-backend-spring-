@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor @ToString(exclude = {"cinemas"})
-public class Ville extends com.yassinebassii.cinema.entities.Data implements Serializable {
+public class Ville implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 20)

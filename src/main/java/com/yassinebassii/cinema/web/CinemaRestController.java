@@ -48,8 +48,8 @@ public class CinemaRestController {
         ticketForm.getTickets().forEach(ticketId -> {
             Ticket ticket = ticketRepository.findById(ticketId).get();
             ticket.setReserve(true);
-            ticket.setNomClient(ticketForm.getNomClient());
-            ticket.setCodePayement(ticketForm.getCodePayement());
+            ticket.setClientName(ticketForm.getClientName());
+            ticket.setCodePayment(ticketForm.getCodePayment());
             ticketRepository.save(ticket);
         });
     }
@@ -58,7 +58,7 @@ public class CinemaRestController {
 
 @Data
 class  TicketForm{
-    private String nomClient;
-    private int codePayement;
+    private String clientName;
+    private int codePayment;
     private List<Long> tickets;
 }

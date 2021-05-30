@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -74,7 +75,10 @@ public class SalleController {
     @GetMapping(path = "/dashboard/salles/{id}/delete")
     public String deleteSalle(@PathVariable Long id){
         Salle salle = salleRepository.findById(id).get();
+        Cinema cinema = salle.getCinema();
         salleRepository.delete(salle);
+        cinema.setNbSalles(cinema.getNbSalles() - 1);
+        cinemaRepository.save(cinema);
         return "redirect:/dashboard/cinemas/" + salle.getCinema().getId() + "/salles";
     }
 
@@ -85,10 +89,15 @@ public class SalleController {
         return "form";
     }
 
+    @Transactional
     @PostMapping(path = "/dashboard/cinemas/{id}/salles/store")
     public String storeSalle(Salle salle, @PathVariable Long id){
         Cinema cinema = cinemaRepository.findById(id).get();
         salle.setCinema(cinema);
+        if(salle.getId() == null){
+            cinema.setNbSalles(cinema.getNbSalles() + 1);
+            cinemaRepository.save(cinema);
+        }
         salle = salleRepository.save(salle);
         return "redirect:/dashboard/cinemas/" + salle.getCinema().getId() + "/salles";
     }

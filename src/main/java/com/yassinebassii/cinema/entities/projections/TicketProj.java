@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Projection(name="p1", types = {Ticket.class})
 public interface TicketProj {
     int getId();
-    double getPrix();
-    Integer getCodePayement();
+    double getPrice();
+    Integer getCodePayment();
     boolean getReserve();
     Place getPlace();
 }

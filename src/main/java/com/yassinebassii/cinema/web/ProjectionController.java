@@ -67,7 +67,7 @@ public class ProjectionController {
         model.addAttribute("data", projections);
         model.addAttribute("pages", new int[projectionPage.getTotalPages()]);
         model.addAttribute("currentPage", page);
-        model.addAttribute("child", "places");
+        model.addAttribute("child", "tickets");
         model.addAttribute("name", "projections");
         model.addAttribute("parents", Stream.of(salle.getCinema().getVille().getName(), salle.getCinema().getName(), salle.getName())
                                     .toArray());

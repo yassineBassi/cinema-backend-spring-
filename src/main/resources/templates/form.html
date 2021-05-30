@@ -43,6 +43,23 @@
                             >
                         </div>
                         <section th:switch="${attribute.getType()}">
+                            <div
+                                th:case="'boolean'"
+                                class="form-check"
+                            >
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    th:name="${attribute.getName()}"
+                                    th:checked="${type == 'edit' ? attribute.getValue(data) : ''}"
+                                    th:id="${attribute.getName()}"
+                                >
+                                <label
+                                    class="form-check-label"
+                                    th:for="${attribute.getName()}"
+                                >
+                                </label>
+                            </div>
                             <select
                                 th:case="'select'"
                                 th:name="${attribute.getName()} + 'Id'"

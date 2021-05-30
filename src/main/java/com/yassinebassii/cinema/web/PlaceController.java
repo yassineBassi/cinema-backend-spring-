@@ -26,6 +26,8 @@ public class PlaceController {
     SalleRepository salleRepository;
     @Autowired
     PlaceRepository placeRepository;
+    @Autowired
+    TicketRepository ticketRepository;
 
     private List<Attribute> attributes = new ArrayList<>();
 
@@ -70,7 +72,11 @@ public class PlaceController {
     @GetMapping(path = "/dashboard/places/{id}/delete")
     public String deletePlace(@PathVariable Long id){
         Place place = placeRepository.findById(id).get();
+        Salle salle = place.getSalle();
         placeRepository.delete(place);
+
+        salle.setNbPlaces(salle.getNbPlaces() - 1);
+        salleRepository.save(salle);
         return "redirect:/dashboard/salles/" + place.getSalle().getId() + "/places";
     }
 
@@ -85,7 +91,19 @@ public class PlaceController {
     public String storePlace(Place place, @PathVariable Long id){
         Salle salle = salleRepository.findById(id).get();
         place.setSalle(salle);
-        place = placeRepository.save(place);
+        Long placeId = place.getId();
+        placeRepository.save(place);
+        if (placeId == null){
+            salle.setNbPlaces(salle.getNbPlaces() + 1);
+            salleRepository.save(salle);
+            salle.getProjections().forEach(projection -> {
+                Ticket ticket = new Ticket();
+                ticket.setProjection(projection);
+                ticket.setPlace(place);
+                ticket.setReserve(false);
+                ticketRepository.save(ticket);
+            });
+        }
         return "redirect:/dashboard/salles/" + place.getSalle().getId() + "/places";
     }
 
@@ -99,24 +117,3 @@ public class PlaceController {
         model.addAttribute("attributes", attributes);
     }
 }
-
-//@Data
-//class ProjectionForm{
-//    private Long id;
-//    private Date date;
-//    private double price;
-//    private String filmTitle;
-//    private String filmPhoto;
-//    private double filmDuration;
-//    private String startHour;
-//
-//    public ProjectionForm(Projection projection){
-//        this.id = projection.getId();
-//        this.date = projection.getDate();
-//        this.price = projection.getPrice();
-//        this.filmTitle = projection.getFilm().getTitle();
-//        this.filmPhoto = "films/" + projection.getFilm().getId() + "/image";
-//        this.filmDuration = projection.getFilm().getDuration();
-//        this.startHour = new SimpleDateFormat("HH:mm:ss").format(projection.getSeance().getStartHour());
-//    }
-//}
